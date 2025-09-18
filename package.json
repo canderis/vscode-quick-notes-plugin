@@ -1,0 +1,62 @@
+{
+	"name": "vscode-notes",
+	"displayName": "Notes Sidebar",
+	"description": "A sidebar for taking persistent notes across projects",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.74.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:c-notes.sayhello",
+		"onView:c-notes-sidebar",
+		"onCommand:c-notes.askquestion"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "c-notes-sidebar-view",
+					"title": "Quick Notes",
+					"icon": "$(note)"
+				}
+			]
+		},
+		"views": {
+			"c-notes-sidebar-view": [
+				{
+					"type": "webview",
+					"id": "c-notes-sidebar",
+					"name": "Quick Notes",
+					"icon": "$(note)",
+					"contextualTitle": "Quick Notes"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"lint": "eslint src --ext .ts",
+		"lint:fix": "eslint src --ext .ts --fix",
+		"format": "prettier --write src/**/*.{ts,html,css,js}",
+		"format:check": "prettier --check src/**/*.{ts,html,css,js}",
+		"build-webview": "node build-webview.js"
+	},
+	"devDependencies": {
+		"@types/node": "16.x",
+		"@types/vscode": "^1.74.0",
+		"@typescript-eslint/eslint-plugin": "^6.0.0",
+		"@typescript-eslint/parser": "^6.0.0",
+		"eslint": "^8.0.0",
+		"typescript": "^4.9.4",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.4",
+		"prettier": "^3.6.2"
+	},
+	"dependencies": {}
+}

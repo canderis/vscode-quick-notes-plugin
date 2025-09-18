@@ -1,0 +1,19 @@
+{
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 6,
+		"sourceType": "module"
+	},
+	"extends": ["plugin:prettier/recommended"],
+	"plugins": ["@typescript-eslint", "prettier"],
+
+	"rules": {
+		"no-unused-vars": "warn",
+		"prettier/prettier": ["warn", {}, { "usePrettierrc": true }],
+		"@typescript-eslint/no-unused-vars": "warn",
+		"@typescript-eslint/no-explicit-any": "warn"
+	},
+
+	"ignorePatterns": ["out", "dist", "**/*.d.ts"]
+}
