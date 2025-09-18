@@ -1,5 +1,5 @@
 {
-	"name": "vscode-notes",
+	"name": "vscode-quick-notes",
 	"displayName": "Notes Sidebar",
 	"description": "A sidebar for taking persistent notes across projects",
 	"version": "0.0.1",
