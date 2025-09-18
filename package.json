@@ -63,6 +63,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
+		"vscode:build": "vsce package",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
 		"lint": "eslint src --ext .ts",
