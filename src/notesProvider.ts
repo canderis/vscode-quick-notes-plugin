@@ -4,25 +4,38 @@ import * as fs from 'fs';
 
 export class NotesProvider implements vscode.WebviewViewProvider {
 	_view?: vscode.WebviewView;
+	private _cachedHtml?: string;
+	private _lastCspSource?: string;
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
 		private readonly _context: vscode.ExtensionContext,
-	) {}
+	) {
+		// Listen for configuration changes
+		this._context.subscriptions.push(
+			vscode.workspace.onDidChangeConfiguration((e) => {
+				if (e.affectsConfiguration('notesSidebar.showStatusMessages')) {
+					// Reload notes to apply the new setting immediately
+					this.loadNotes();
+				}
+			}),
+		);
+	}
 
 	public resolveWebviewView(webviewView: vscode.WebviewView) {
 		this._view = webviewView;
 
+		// Set webview options once
 		webviewView.webview.options = {
-			// Allow scripts in the webview
 			enableScripts: true,
-
 			localResourceRoots: [this._extensionUri],
+			enableCommandUris: false,
 		};
 
+		// Set HTML content immediately
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-		// Listen for messages from the Sidebar component and execute action
+		// Set up message listener once
 		webviewView.webview.onDidReceiveMessage(async (data) => {
 			switch (data.type) {
 				case 'saveNotes': {
@@ -61,8 +74,13 @@ export class NotesProvider implements vscode.WebviewViewProvider {
 	}
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
-		// Use a nonce to only allow a specific script to be run.
 		const nonce = getNonce();
+
+		// Use cached HTML if CSP source hasn't changed
+		if (this._cachedHtml && this._lastCspSource === webview.cspSource) {
+			// Only replace the nonce for security
+			return this._cachedHtml.replace(/\{\{nonce\}\}/g, nonce);
+		}
 
 		// Read the HTML template file
 		const htmlPath = path.join(this._extensionUri.fsPath, 'src', 'webview.html');
@@ -76,7 +94,11 @@ export class NotesProvider implements vscode.WebviewViewProvider {
 		}
 
 		// Replace template variables
-		htmlContent = htmlContent.replace('{{cspSource}}', webview.cspSource).replace('{{nonce}}', nonce);
+		htmlContent = htmlContent.replace(/\{\{cspSource\}\}/g, webview.cspSource).replace(/\{\{nonce\}\}/g, nonce);
+
+		// Cache the processed HTML and CSP source
+		this._cachedHtml = htmlContent;
+		this._lastCspSource = webview.cspSource;
 
 		return htmlContent;
 	}
@@ -86,19 +108,19 @@ export class NotesProvider implements vscode.WebviewViewProvider {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' {{cspSource}}; script-src 'nonce-{{nonce}}' {{cspSource}};">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script nonce="${nonce}">
+    <script nonce="{{nonce}}">
         const tsvscode = acquireVsCodeApi();
     </script>
-    <style nonce="${nonce}">
+    <style nonce="{{nonce}}">
         body { font-family: var(--vscode-font-family); padding: 16px; }
         .notes-textarea { width: 100%; height: 300px; }
     </style>
 </head>
 <body>
     <textarea id="notes-textarea" placeholder="Start typing your notes here..."></textarea>
-    <script nonce="${nonce}">
+    <script nonce="{{nonce}}">
         const textarea = document.getElementById('notes-textarea');
         const tsvscode = acquireVsCodeApi();
 

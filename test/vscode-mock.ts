@@ -10,6 +10,9 @@ export const workspace = {
 	getConfiguration: vi.fn(() => ({
 		get: vi.fn().mockReturnValue(false),
 	})),
+	onDidChangeConfiguration: vi.fn(() => ({
+		dispose: vi.fn(),
+	})),
 };
 
 export const Uri = {

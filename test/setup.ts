@@ -11,6 +11,9 @@ const mockVSCode = {
 		getConfiguration: vi.fn(() => ({
 			get: vi.fn().mockReturnValue(false),
 		})),
+		onDidChangeConfiguration: vi.fn(() => ({
+			dispose: vi.fn(),
+		})),
 	},
 	Uri: {
 		joinPath: vi.fn((base, ...paths) => ({

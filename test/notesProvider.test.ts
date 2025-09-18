@@ -20,6 +20,7 @@ describe('NotesProvider', () => {
 				update: vi.fn(),
 			},
 			extensionUri: { fsPath: '/mock/extension/path' },
+			subscriptions: [],
 		};
 
 		mockWebviewView = {
@@ -120,6 +121,69 @@ describe('NotesProvider', () => {
 		});
 	});
 
+	describe('configuration changes', () => {
+		it('should set up configuration change listener on construction', async () => {
+			const vscode = await import('vscode');
+			expect(vscode.workspace.onDidChangeConfiguration).toHaveBeenCalled();
+			expect(mockContext.subscriptions).toHaveLength(1);
+		});
+
+		it('should reload notes when showStatusMessages setting changes', async () => {
+			const vscode = await import('vscode');
+			const mockOnDidChangeConfiguration = vi.mocked(vscode.workspace.onDidChangeConfiguration);
+
+			// Get the callback function that was passed to onDidChangeConfiguration
+			const callback = mockOnDidChangeConfiguration.mock.calls[0][0];
+
+			// Mock the configuration change event
+			const mockEvent = {
+				affectsConfiguration: vi.fn().mockReturnValue(true),
+			};
+
+			// Set up the view for loadNotes to work
+			(notesProvider as any)._view = mockWebviewView;
+			mockContext.globalState.get.mockReturnValue('test notes');
+
+			// Mock the configuration to return true for showStatusMessages
+			const mockGetConfiguration = vi.fn().mockReturnValue({
+				get: vi.fn().mockReturnValue(true),
+			});
+			vi.mocked(vscode.workspace.getConfiguration).mockImplementation(mockGetConfiguration);
+
+			// Call the callback with the mock event
+			callback(mockEvent);
+
+			// Verify that loadNotes was called (which sends a message to the webview)
+			expect(mockWebviewView.webview.postMessage).toHaveBeenCalledWith({
+				type: 'loadNotes',
+				value: 'test notes',
+				showStatusMessages: true,
+			});
+		});
+
+		it('should not reload notes when other settings change', async () => {
+			const vscode = await import('vscode');
+			const mockOnDidChangeConfiguration = vi.mocked(vscode.workspace.onDidChangeConfiguration);
+
+			// Get the callback function that was passed to onDidChangeConfiguration
+			const callback = mockOnDidChangeConfiguration.mock.calls[0][0];
+
+			// Mock the configuration change event for a different setting
+			const mockEvent = {
+				affectsConfiguration: vi.fn().mockReturnValue(false),
+			};
+
+			// Set up the view for loadNotes to work
+			(notesProvider as any)._view = mockWebviewView;
+
+			// Call the callback with the mock event
+			callback(mockEvent);
+
+			// Verify that loadNotes was NOT called
+			expect(mockWebviewView.webview.postMessage).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('resolveWebviewView', () => {
 		it('should set up webview options and load notes', () => {
 			const postMessageSpy = vi.spyOn(mockWebviewView.webview, 'postMessage');
@@ -130,6 +194,7 @@ describe('NotesProvider', () => {
 			expect(mockWebviewView.webview.options).toEqual({
 				enableScripts: true,
 				localResourceRoots: [mockContext.extensionUri],
+				enableCommandUris: false,
 			});
 			expect(onDidReceiveMessageSpy).toHaveBeenCalled();
 			expect(mockWebviewView.webview.html).toBeDefined();

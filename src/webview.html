@@ -8,16 +8,17 @@
     -->
 		<meta
 			http-equiv="Content-Security-Policy"
-			content="img-src https: data:; style-src 'unsafe-inline' {{cspSource}}; script-src 'unsafe-inline' {{cspSource}};"
+			content="img-src https: data:; style-src 'unsafe-inline' {{cspSource}}; script-src 'nonce-{{nonce}}' {{cspSource}};"
 		/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<script>
+		<script nonce="{{nonce}}">
 			// Wait for DOM to be ready
 			document.addEventListener('DOMContentLoaded', () => {
 				const tsvscode = acquireVsCodeApi();
 				const textarea = document.getElementById('notes-textarea');
 				const statusElement = document.getElementById('status');
 				let saveTimeout;
+				let isInitialized = false;
 
 				// Auto-save on text change
 				textarea.addEventListener('input', () => {
@@ -43,9 +44,10 @@
 						textarea.value = message.value || '';
 						// Store the setting globally for use in save operations
 						window.showStatusMessages = message.showStatusMessages !== false;
-						if (window.showStatusMessages) {
+						if (window.showStatusMessages && !isInitialized) {
 							showStatus('Notes loaded');
 						}
+						isInitialized = true;
 					}
 				});
 
@@ -62,45 +64,46 @@
 			});
 		</script>
 		<style nonce="{{nonce}}">
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
 			body {
 				font-family: var(--vscode-font-family);
 				font-size: var(--vscode-font-size);
-				font-weight: var(--vscode-font-weight);
 				color: var(--vscode-foreground);
-				background-color: var(--vscode-editor-background);
-				margin: 0;
+				background: var(--vscode-editor-background);
 				padding: 16px;
-				box-sizing: border-box;
+				transform: translateZ(0);
+				height: 100vh;
 			}
 
 			.notes-container {
 				display: flex;
 				flex-direction: column;
-				height: 100vh;
+				height: 100%;
 				max-width: 100%;
+				overflow: hidden;
 			}
-
 			.notes-header {
 				margin-bottom: 16px;
 				padding-bottom: 12px;
 				border-bottom: 1px solid var(--vscode-panel-border);
 			}
-
 			.notes-title {
 				font-size: 18px;
 				font-weight: 600;
 				color: var(--vscode-foreground);
-				margin: 0 0 8px 0;
+				margin: 0 0 8px;
 				display: flex;
 				align-items: center;
 				gap: 8px;
 			}
-
 			.notes-title::before {
 				content: '📝';
 				font-size: 16px;
 			}
-
 			.notes-description {
 				color: var(--vscode-descriptionForeground);
 				font-size: 13px;
@@ -115,22 +118,21 @@
 				padding: 12px;
 				border: 1px solid var(--vscode-input-border);
 				border-radius: 4px;
-				background-color: var(--vscode-input-background);
+				background: var(--vscode-input-background);
 				color: var(--vscode-input-foreground);
 				font-family: var(--vscode-editor-font-family);
 				font-size: var(--vscode-editor-font-size);
 				line-height: 1.5;
-				resize: vertical;
-				outline: none;
+				resize: none;
+				outline: 0;
 				transition: border-color 0.2s ease;
-				box-sizing: border-box;
+				contain: layout style paint;
+				will-change: contents;
 			}
-
 			.notes-textarea:focus {
 				border-color: var(--vscode-focusBorder);
 				box-shadow: 0 0 0 1px var(--vscode-focusBorder);
 			}
-
 			.notes-textarea::placeholder {
 				color: var(--vscode-input-placeholderForeground);
 			}
@@ -139,7 +141,7 @@
 				position: fixed;
 				bottom: 16px;
 				right: 16px;
-				background-color: var(--vscode-badge-background);
+				background: var(--vscode-badge-background);
 				color: var(--vscode-badge-foreground);
 				padding: 6px 12px;
 				border-radius: 4px;
@@ -151,11 +153,9 @@
 				z-index: 1000;
 				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 			}
-
 			.status-indicator.show {
 				opacity: 1;
 			}
-
 			.notes-footer {
 				margin-top: 12px;
 				padding-top: 12px;
@@ -165,24 +165,19 @@
 				text-align: center;
 			}
 
-			/* Scrollbar styling to match VS Code */
 			.notes-textarea::-webkit-scrollbar {
 				width: 8px;
 			}
-
 			.notes-textarea::-webkit-scrollbar-track {
 				background: var(--vscode-scrollbarSlider-background);
 			}
-
 			.notes-textarea::-webkit-scrollbar-thumb {
 				background: var(--vscode-scrollbarSlider-background);
 				border-radius: 4px;
 			}
-
 			.notes-textarea::-webkit-scrollbar-thumb:hover {
 				background: var(--vscode-scrollbarSlider-hoverBackground);
 			}
-
 			.notes-textarea::-webkit-scrollbar-thumb:active {
 				background: var(--vscode-scrollbarSlider-activeBackground);
 			}
@@ -201,7 +196,6 @@
 				id="notes-textarea"
 				placeholder="Start typing your notes here... Your notes are automatically saved as you type."
 			></textarea>
-			<div class="notes-footer">Auto-saved • Press Ctrl+S to save manually</div>
 			<div class="status-indicator" id="status">Notes saved</div>
 		</div>
 	</body>

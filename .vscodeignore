@@ -1,6 +1,7 @@
 .vscode/**
 .vscode-test/**
-src/**
+src/*.ts
+src/*.js
 test/**
 vitest.config.ts
 .gitignore
@@ -9,4 +10,3 @@ vsc-extension-quick-start.md
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
-**/*.ts
