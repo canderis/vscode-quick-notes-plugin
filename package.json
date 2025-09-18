@@ -2,8 +2,9 @@
 	"name": "vscode-quick-notes",
 	"displayName": "Notes Sidebar",
 	"description": "A sidebar for taking persistent notes across projects",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "Canderis",
+	"icon": "icon.png",
 	"engines": {
 		"vscode": "^1.74.0"
 	},
