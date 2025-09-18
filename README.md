@@ -1,6 +1,7 @@
 # Notes Sidebar Extension
 
 A VS Code extension that adds a "Notes" tab to the sidebar where you can take persistent notes that are saved globally across all projects.
+Project inspired by RuneLite
 
 ## Features
 
