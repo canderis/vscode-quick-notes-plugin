@@ -3,17 +3,28 @@
 	"displayName": "Notes Sidebar",
 	"description": "A sidebar for taking persistent notes across projects",
 	"version": "0.0.1",
+	"publisher": "tbd",
 	"engines": {
 		"vscode": "^1.74.0"
 	},
 	"categories": [
 		"Other"
 	],
-	"activationEvents": [
-		"onCommand:c-notes.sayhello",
-		"onView:c-notes-sidebar",
-		"onCommand:c-notes.askquestion"
+	"keywords": [
+		"notes",
+		"sidebar",
+		"productivity",
+		"writing",
+		"persistent"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/canderis/vscode-quick-notes-plugin.git"
+	},
+	"homepage": "https://github.com/canderis/vscode-quick-notes-plugin#readme",
+	"bugs": {
+		"url": "https://github.com/canderis/vscode-quick-notes-plugin/issues"
+	},
 	"main": "./out/extension.js",
 	"contributes": {
 		"viewsContainers": {
@@ -44,8 +55,7 @@
 		"lint": "eslint src --ext .ts",
 		"lint:fix": "eslint src --ext .ts --fix",
 		"format": "prettier --write src/**/*.{ts,html,css,js}",
-		"format:check": "prettier --check src/**/*.{ts,html,css,js}",
-		"build-webview": "node build-webview.js"
+		"format:check": "prettier --check src/**/*.{ts,html,css,js}"
 	},
 	"devDependencies": {
 		"@types/node": "16.x",

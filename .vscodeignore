@@ -1,10 +1,10 @@
 .vscode/**
 .vscode-test/**
-src/*.ts
-src/*.js
+src/**
 .gitignore
 .yarnrc
-vsc-extension-quickstart.md
+vsc-extension-quick-start.md
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
+**/*.ts

@@ -11,21 +11,13 @@
 			content="img-src https: data:; style-src 'unsafe-inline' {{cspSource}}; script-src 'unsafe-inline' {{cspSource}};"
 		/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link href="{{styleResetUri}}" rel="stylesheet" />
-		<link href="{{styleVSCodeUri}}" rel="stylesheet" />
-		<link href="{{styleMainUri}}" rel="stylesheet" />
 		<script>
-			console.log('Webview script loaded');
-			const tsvscode = acquireVsCodeApi();
-
 			// Wait for DOM to be ready
 			document.addEventListener('DOMContentLoaded', () => {
+				const tsvscode = acquireVsCodeApi();
 				const textarea = document.getElementById('notes-textarea');
 				const statusElement = document.getElementById('status');
 				let saveTimeout;
-
-				console.log('Textarea found:', textarea);
-				console.log('Status found:', statusElement);
 
 				// Auto-save on text change
 				textarea.addEventListener('input', () => {
@@ -33,7 +25,6 @@
 						clearTimeout(saveTimeout);
 					}
 					saveTimeout = setTimeout(() => {
-						console.log('Sending save message:', textarea.value.substring(0, 50) + '...');
 						tsvscode.postMessage({
 							type: 'saveNotes',
 							value: textarea.value,
@@ -43,19 +34,16 @@
 				});
 
 				// Handle messages from extension
-				console.log('Setting up message listener');
 				window.addEventListener('message', (event) => {
 					const message = event.data;
-					console.log('Webview received message:', message);
-					if (message.type === 'test') {
-						console.log('Test message received:', message.value);
-						showStatus('Test message received');
-					} else if (message.type === 'loadNotes') {
-						console.log('Loading notes into textarea:', message.value);
+					if (message.type === 'loadNotes') {
 						textarea.value = message.value || '';
 						showStatus('Notes loaded');
 					}
 				});
+
+				// Request notes to be loaded when the webview is ready
+				tsvscode.postMessage({ type: 'loadNotes' });
 
 				function showStatus(message) {
 					statusElement.textContent = message;
@@ -194,7 +182,6 @@
 		</style>
 	</head>
 	<body>
-		<script src="{{scriptUri}}"></script>
 		<div class="notes-container">
 			<div class="notes-header">
 				<h1 class="notes-title">Quick Notes</h1>
