@@ -29,7 +29,10 @@
 							type: 'saveNotes',
 							value: textarea.value,
 						});
-						showStatus('Notes saved');
+						// Check if status messages are enabled (default to true for backward compatibility)
+						if (window.showStatusMessages !== false) {
+							showStatus('Notes saved');
+						}
 					}, 1000);
 				});
 
@@ -38,7 +41,11 @@
 					const message = event.data;
 					if (message.type === 'loadNotes') {
 						textarea.value = message.value || '';
-						showStatus('Notes loaded');
+						// Store the setting globally for use in save operations
+						window.showStatusMessages = message.showStatusMessages !== false;
+						if (window.showStatusMessages) {
+							showStatus('Notes loaded');
+						}
 					}
 				});
 

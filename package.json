@@ -25,6 +25,9 @@
 	"bugs": {
 		"url": "https://github.com/canderis/vscode-quick-notes-plugin/issues"
 	},
+	"activationEvents": [
+		"onView:c-notes-sidebar"
+	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"viewsContainers": {
@@ -46,6 +49,16 @@
 					"contextualTitle": "Quick Notes"
 				}
 			]
+		},
+		"configuration": {
+			"title": "Notes Sidebar",
+			"properties": {
+				"notesSidebar.showStatusMessages": {
+					"type": "boolean",
+					"default": false,
+					"description": "Show status messages when notes are saved or loaded"
+				}
+			}
 		}
 	},
 	"scripts": {
@@ -62,7 +75,7 @@
 		"test:coverage": "vitest run --coverage"
 	},
 	"devDependencies": {
-		"@types/vscode": "^1.104.0",
+		"@types/vscode": "^1.74.0",
 		"@typescript-eslint/eslint-plugin": "^8.44.0",
 		"@typescript-eslint/parser": "^8.44.0",
 		"eslint": "^9.35.0",

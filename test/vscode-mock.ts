@@ -6,6 +6,12 @@ export const window = {
 	showErrorMessage: vi.fn(),
 };
 
+export const workspace = {
+	getConfiguration: vi.fn(() => ({
+		get: vi.fn().mockReturnValue(false),
+	})),
+};
+
 export const Uri = {
 	joinPath: vi.fn((base: any, ...paths: string[]) => ({
 		fsPath: [base.fsPath, ...paths].join('/'),

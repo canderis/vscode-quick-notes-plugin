@@ -7,6 +7,11 @@ const mockVSCode = {
 		showInformationMessage: vi.fn(),
 		showErrorMessage: vi.fn(),
 	},
+	workspace: {
+		getConfiguration: vi.fn(() => ({
+			get: vi.fn().mockReturnValue(false),
+		})),
+	},
 	Uri: {
 		joinPath: vi.fn((base, ...paths) => ({
 			fsPath: [base.fsPath, ...paths].join('/'),

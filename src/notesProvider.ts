@@ -50,10 +50,12 @@ export class NotesProvider implements vscode.WebviewViewProvider {
 
 	private loadNotes(): void {
 		const notesContent = this._context.globalState.get('notesContent', '');
+		const showStatusMessages = vscode.workspace.getConfiguration('notesSidebar').get('showStatusMessages', true);
 		if (this._view) {
 			this._view.webview.postMessage({
 				type: 'loadNotes',
 				value: notesContent,
+				showStatusMessages: showStatusMessages,
 			});
 		}
 	}
