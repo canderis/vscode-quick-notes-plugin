@@ -3,7 +3,7 @@
 	"displayName": "Notes Sidebar",
 	"description": "A sidebar for taking persistent notes across projects",
 	"version": "0.0.1",
-	"publisher": "tbd",
+	"publisher": "Canderis",
 	"engines": {
 		"vscode": "^1.74.0"
 	},
