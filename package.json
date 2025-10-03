@@ -58,6 +58,11 @@
 					"type": "boolean",
 					"default": false,
 					"description": "Show status messages when notes are saved or loaded"
+				},
+				"notesSidebar.showHeader": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show the header section with title and description"
 				}
 			}
 		}

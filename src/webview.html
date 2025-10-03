@@ -44,6 +44,15 @@
 						textarea.value = message.value || '';
 						// Store the setting globally for use in save operations
 						window.showStatusMessages = message.showStatusMessages !== false;
+						// Handle header visibility
+						const headerElement = document.querySelector('.notes-header');
+						if (headerElement) {
+							if (message.showHeader === false) {
+								headerElement.classList.add('hidden');
+							} else {
+								headerElement.classList.remove('hidden');
+							}
+						}
 						if (window.showStatusMessages && !isInitialized) {
 							showStatus('Notes loaded');
 						}
@@ -73,7 +82,6 @@
 				font-family: var(--vscode-font-family);
 				font-size: var(--vscode-font-size);
 				color: var(--vscode-foreground);
-				background: var(--vscode-editor-background);
 				padding: 16px;
 				transform: translateZ(0);
 				height: 100vh;
@@ -90,6 +98,19 @@
 				margin-bottom: 16px;
 				padding-bottom: 12px;
 				border-bottom: 1px solid var(--vscode-panel-border);
+				transition:
+					opacity 0.2s ease,
+					margin 0.2s ease,
+					padding 0.2s ease,
+					height 0.2s ease;
+			}
+			.notes-header.hidden {
+				opacity: 0;
+				margin-bottom: 0;
+				padding-bottom: 0;
+				border-bottom: none;
+				height: 0;
+				overflow: hidden;
 			}
 			.notes-title {
 				font-size: 18px;

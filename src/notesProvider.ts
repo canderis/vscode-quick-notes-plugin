@@ -14,7 +14,10 @@ export class NotesProvider implements vscode.WebviewViewProvider {
 		// Listen for configuration changes
 		this._context.subscriptions.push(
 			vscode.workspace.onDidChangeConfiguration((e) => {
-				if (e.affectsConfiguration('notesSidebar.showStatusMessages')) {
+				if (
+					e.affectsConfiguration('notesSidebar.showStatusMessages') ||
+					e.affectsConfiguration('notesSidebar.showHeader')
+				) {
 					// Reload notes to apply the new setting immediately
 					this.loadNotes();
 				}
@@ -63,12 +66,15 @@ export class NotesProvider implements vscode.WebviewViewProvider {
 
 	private loadNotes(): void {
 		const notesContent = this._context.globalState.get('notesContent', '');
-		const showStatusMessages = vscode.workspace.getConfiguration('notesSidebar').get('showStatusMessages', true);
+		const config = vscode.workspace.getConfiguration('notesSidebar');
+		const showStatusMessages = config.get('showStatusMessages', true);
+		const showHeader = config.get('showHeader', true);
 		if (this._view) {
 			this._view.webview.postMessage({
 				type: 'loadNotes',
 				value: notesContent,
 				showStatusMessages: showStatusMessages,
+				showHeader: showHeader,
 			});
 		}
 	}
